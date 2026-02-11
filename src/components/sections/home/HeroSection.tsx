@@ -1,18 +1,20 @@
-import Image from "next/image";
 import Button from "@/components/ui/Button";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 export default function HeroSection() {
   return (
     <section className="relative flex min-h-[80vh] items-center overflow-hidden bg-navy">
-      {/* Background image */}
-      <Image
-        src="/images/homepage/banner-video4.webp"
-        alt=""
-        fill
-        className="object-cover"
-        priority
-      />
+      {/* Background video — autoplay, muted, looping */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/images/homepage/banner-video4.webp"
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src="/videos/hero-bg.mp4" type="video/mp4" />
+      </video>
       {/* Background overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/70 to-navy/50" />
 
