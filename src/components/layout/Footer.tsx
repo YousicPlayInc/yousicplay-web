@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 import FooterEmailForm from "./FooterEmailForm";
@@ -57,9 +58,7 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <Link href="/" className="inline-block">
-              <span className="font-poppins text-xl font-bold tracking-tight text-white">
-                Yousic<span className="text-lime">Play</span>
-              </span>
+              <Image src="/images/yousic-logo.svg" alt="YousicPlay" width={140} height={36} className="h-7 w-auto" />
             </Link>
           </div>
 

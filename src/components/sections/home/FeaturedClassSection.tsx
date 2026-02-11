@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Tag from "@/components/ui/Tag";
 import StarRating from "@/components/ui/StarRating";
@@ -10,6 +11,13 @@ export default function FeaturedClassSection() {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Video preview placeholder */}
           <div className="relative aspect-video overflow-hidden rounded-2xl bg-navy-light">
+            <Image
+              src="/images/courses/cory-henry-workshop-hero.webp"
+              alt="Cory Henry Workshop"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-magenta/90">
                 <svg className="ml-1 h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">

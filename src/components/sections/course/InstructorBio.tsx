@@ -1,3 +1,4 @@
+import Image from "next/image";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 interface InstructorBioProps {
@@ -7,7 +8,7 @@ interface InstructorBioProps {
   quote?: string;
 }
 
-export default function InstructorBio({ name, bio, quote }: InstructorBioProps) {
+export default function InstructorBio({ name, bio, photo, quote }: InstructorBioProps) {
   return (
     <section className="bg-navy py-20">
       <MaxWidthWrapper>
@@ -16,10 +17,8 @@ export default function InstructorBio({ name, bio, quote }: InstructorBioProps) 
         </h2>
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start">
           {/* Photo placeholder */}
-          <div className="h-56 w-56 shrink-0 overflow-hidden rounded-full bg-navy-light">
-            <div className="flex h-full items-center justify-center font-poppins text-sm text-white/30">
-              {name}
-            </div>
+          <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full bg-navy-light">
+            <Image src={photo} alt={name} fill className="object-cover" sizes="224px" />
           </div>
 
           <div className="flex-1">

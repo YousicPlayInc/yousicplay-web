@@ -69,7 +69,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
         rating={course.rating}
         learnerCount={course.learnerCount}
         buyUrl={course.buyUrl}
-        imagePath={course.imagePath}
+        imagePath={course.heroImage || course.imagePath}
       />
       <StickyPriceBar
         price={course.price}

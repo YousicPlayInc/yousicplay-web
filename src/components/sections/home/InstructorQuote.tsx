@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
@@ -8,9 +9,13 @@ export default function InstructorQuote() {
         <div className="flex flex-col items-center gap-10 lg:flex-row">
           {/* Photo placeholder */}
           <div className="relative h-64 w-64 shrink-0 overflow-hidden rounded-full bg-navy/10 lg:h-80 lg:w-80">
-            <div className="flex h-full items-center justify-center font-poppins text-sm font-medium text-navy/40">
-              Ne-Yo
-            </div>
+            <Image
+              src="/images/homepage/neyo-square.webp"
+              alt="Ne-Yo"
+              fill
+              className="object-cover"
+              sizes="320px"
+            />
           </div>
 
           <div className="text-center lg:text-left">

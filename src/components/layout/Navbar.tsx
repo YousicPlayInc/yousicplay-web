@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import MaxWidthWrapper from "./MaxWidthWrapper";
@@ -13,9 +14,7 @@ export default function Navbar() {
         <nav className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <span className="font-poppins text-xl font-bold tracking-tight text-white">
-              Yousic<span className="text-lime">Play</span>
-            </span>
+            <Image src="/images/yousic-logo.svg" alt="YousicPlay" width={160} height={40} className="h-8 w-auto" priority />
           </Link>
 
           {/* Desktop Nav */}

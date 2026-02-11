@@ -27,6 +27,24 @@ export const metadata: Metadata = {
   },
   description:
     "Get exclusive access to music lessons from celebrity musicians and world-class instructors. Learn piano, guitar, violin, drums, singing and more.",
+  icons: {
+    icon: "/images/favicon.webp",
+    apple: "/images/favicon.webp",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://yousicplay.com",
+    siteName: "YousicPlay",
+    images: [
+      {
+        url: "/images/homepage/banner-video4.webp",
+        width: 1200,
+        height: 630,
+        alt: "YousicPlay — Learn Music From the World's Best Musicians",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

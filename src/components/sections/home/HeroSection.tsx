@@ -1,9 +1,18 @@
+import Image from "next/image";
 import Button from "@/components/ui/Button";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 export default function HeroSection() {
   return (
     <section className="relative flex min-h-[80vh] items-center overflow-hidden bg-navy">
+      {/* Background image */}
+      <Image
+        src="/images/homepage/banner-video4.webp"
+        alt=""
+        fill
+        className="object-cover"
+        priority
+      />
       {/* Background overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/70 to-navy/50" />
 
