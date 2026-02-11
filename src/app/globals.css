@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colors */
+  --color-navy: #202536;
+  --color-navy-light: #2a2f45;
+  --color-navy-dark: #181c2c;
+  --color-lime: #CCFF00;
+  --color-lime-dark: #b3e000;
+  --color-magenta: #B10BFF;
+  --color-magenta-dark: #9500d9;
+  --color-cream: #F5F5F0;
+  --color-cream-dark: #E8E8E0;
+
+  /* Font families */
+  --font-poppins: var(--font-poppins-var);
+  --font-serif: var(--font-playfair-var);
+
+  /* Spacing scale for sections */
+  --spacing-section: 80px;
+  --spacing-section-sm: 60px;
+
+  /* Container */
+  --container-max: 1200px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #202536;
+  --foreground: #ffffff;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins-var), system-ui, sans-serif;
+}
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove default focus outline and add custom */
+*:focus-visible {
+  outline: 2px solid var(--color-lime);
+  outline-offset: 2px;
 }
