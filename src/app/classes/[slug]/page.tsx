@@ -94,7 +94,6 @@ export default async function CoursePage({ params }: CoursePageProps) {
         heading="Your Learning Journey"
         items={valuePropItems}
         variant="dark"
-        prefixes={["01", "02", "03"]}
       />
       <FAQAccordion items={course.faq} variant="light" />
     </>

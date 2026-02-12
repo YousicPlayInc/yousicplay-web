@@ -25,17 +25,17 @@ const valuePropItems = [
   {
     title: "Explore",
     description:
-      "Browse courses across piano, guitar, violin, drums, singing, songwriting, and more. Find the perfect course for your musical journey.",
+      "hundreds of lessons and captivating stories from the world's best musicians.",
   },
   {
     title: "Learn",
     description:
-      "Dive into expertly crafted lessons from Grammy-winning musicians. Learn at your own pace with lifetime access to all materials.",
+      "the skills, techniques, and theory you need to become a pro at your instrument.",
   },
   {
     title: "Grow",
     description:
-      "Apply what you learn, connect with fellow students, and watch your skills transform. Join a community of passionate music learners.",
+      "with your instrument through playful learning designed for easy improvement and music creation.",
   },
 ];
 
@@ -45,10 +45,9 @@ export default function Home() {
       <HeroSection />
       <FeaturedClassSection />
       <ValuePropositionGrid
-        heading="Play and Learn From the Best"
+        heading="Play and Learn With Your Music Heroes"
         items={valuePropItems}
         variant="light"
-        prefixes={["01", "02", "03"]}
       />
       <TrendingCarousel courses={trendingCourses} />
       <StatsSection />

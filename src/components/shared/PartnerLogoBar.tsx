@@ -11,8 +11,11 @@ const partners = [
 
 export default function PartnerLogoBar() {
   return (
-    <section className="bg-cream py-12">
+    <section className="bg-cream py-16">
       <MaxWidthWrapper>
+        <h2 className="mb-8 text-center font-poppins text-2xl font-bold uppercase tracking-tight text-navy sm:text-3xl">
+          Partners &amp; Affiliates
+        </h2>
         <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
           {partners.map((partner) => (
             <div

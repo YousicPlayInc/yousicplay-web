@@ -32,11 +32,6 @@ export default function CourseCard({
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
-        <div className="absolute left-3 top-3">
-          <span className="rounded-full bg-magenta/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-            AI Powered
-          </span>
-        </div>
       </div>
       <div className="p-5">
         <h3 className="font-poppins text-sm font-bold uppercase tracking-wide text-white">

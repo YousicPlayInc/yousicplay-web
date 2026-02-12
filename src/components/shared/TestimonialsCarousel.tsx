@@ -18,7 +18,7 @@ interface TestimonialsCarouselProps {
 }
 
 export default function TestimonialsCarousel({
-  heading = "HEAR WHAT SOME OF OUR STUDENTS HAVE TO SAY!",
+  heading = "Hear From Other Musicians",
   testimonials,
 }: TestimonialsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,24 +79,37 @@ export default function TestimonialsCarousel({
                   key={t.name}
                   className="w-full shrink-0 sm:w-[calc(50%-12px)]"
                 >
-                  <div className="rounded-2xl bg-navy-light p-6">
-                    <div className="mb-4 flex items-center gap-4">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
+                  <div className="group cursor-pointer">
+                    {/* Magenta quote mark */}
+                    <svg className="mb-2 h-8 w-10 text-magenta" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151C7.563 6.068 6 8.789 6 11h4v10H0z" />
+                    </svg>
+                    <div className="flex gap-5">
+                      {/* Video thumbnail */}
+                      <div className="relative h-48 w-40 shrink-0 overflow-hidden rounded-xl bg-navy-light">
                         <Image
                           src={t.photo}
                           alt={t.name}
                           fill
                           className="object-cover"
-                          sizes="56px"
+                          sizes="160px"
                         />
+                        <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90">
+                          <svg className="ml-0.5 h-3 w-3 text-navy" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-poppins text-sm font-semibold text-white">{t.name}</p>
+                      {/* Quote + name */}
+                      <div className="flex flex-col justify-center">
+                        <p className="text-sm leading-relaxed text-white/80">
+                          &ldquo;{t.quote}&rdquo;
+                        </p>
+                        <p className="mt-3 font-poppins text-xs font-bold uppercase tracking-wider text-white">
+                          {t.name}
+                        </p>
                       </div>
                     </div>
-                    <p className="text-sm leading-relaxed text-white/70">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
                   </div>
                 </div>
               ))}
