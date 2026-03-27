@@ -52,6 +52,36 @@ export interface Course {
   heroImage?: string;
 }
 
+export type ProductType = "free" | "digital" | "coaching";
+
+export interface Product {
+  slug: string;
+  title: string;
+  cardTitle: string;
+  description: string;
+  type: ProductType;
+  price: number;
+  buyUrl: string;
+  imagePath: string;
+  instructor?: Instructor;
+  instrument?: string;
+  level?: string;
+  features?: string[];
+}
+
+export interface Bundle {
+  slug: string;
+  title: string;
+  cardTitle: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  buyUrl: string;
+  imagePath: string;
+  includedCourseSlugs: string[];
+  highlights?: string[];
+}
+
 export interface Partner {
   name: string;
   logo: string;
