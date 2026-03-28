@@ -1,84 +1,32 @@
 "use client";
 
-import Script from "next/script";
+import MuxPlayer from "@mux/mux-player-react";
 
 interface VideoPlayerProps {
   courseSlug: string;
   lessonIndex: number;
   lessonTitle: string;
-  /** Wistia video hash ID — e.g., "abc123def4" */
-  wistiaId?: string;
+  /** Mux playback ID — found in Mux dashboard after uploading the video */
+  muxPlaybackId?: string;
 }
 
 export default function VideoPlayer({
   lessonTitle,
-  wistiaId,
+  muxPlaybackId,
 }: VideoPlayerProps) {
-  if (wistiaId) {
+  if (muxPlaybackId) {
     return (
-      <>
-        {/* Wistia player scripts (loaded once, deduplicated by Next.js) */}
-        <Script
-          src="https://fast.wistia.com/embed/medias/all.js"
-          strategy="lazyOnload"
-        />
-        <Script
-          src="https://fast.wistia.com/assets/external/E-v1.js"
-          strategy="lazyOnload"
-        />
-
-        {/* Responsive Wistia embed */}
-        <div
-          className="wistia_responsive_padding"
-          style={{ padding: "56.25% 0 0 0", position: "relative" }}
-        >
-          <div
-            className="wistia_responsive_wrapper"
-            style={{
-              height: "100%",
-              left: 0,
-              position: "absolute",
-              top: 0,
-              width: "100%",
-            }}
-          >
-            <div
-              className={`wistia_embed wistia_async_${wistiaId} seo=true videoFoam=true`}
-              style={{ height: "100%", position: "relative", width: "100%" }}
-            >
-              <div
-                className="wistia_swatch"
-                style={{
-                  height: "100%",
-                  left: 0,
-                  opacity: 0,
-                  overflow: "hidden",
-                  position: "absolute",
-                  top: 0,
-                  transition: "opacity 200ms",
-                  width: "100%",
-                }}
-              >
-                <img
-                  src={`https://fast.wistia.com/embed/medias/${wistiaId}/swatch`}
-                  style={{
-                    filter: "blur(5px)",
-                    height: "100%",
-                    objectFit: "contain",
-                    width: "100%",
-                  }}
-                  alt={lessonTitle}
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
+      <MuxPlayer
+        playbackId={muxPlaybackId}
+        metadata={{ video_title: lessonTitle }}
+        streamType="on-demand"
+        style={{ width: "100%", height: "100%", aspectRatio: "16/9" }}
+        accentColor="#CCFF00"
+      />
     );
   }
 
-  // Placeholder state — shown until wistiaId is added to the lesson data
+  // Placeholder — shown until muxPlaybackId is added to the lesson data
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-b from-navy-dark to-black">
       <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-lime/30 bg-lime/10">
@@ -89,7 +37,7 @@ export default function VideoPlayer({
       <p className="mb-1 font-poppins text-lg font-semibold text-white">{lessonTitle}</p>
       <p className="text-sm text-white/40">Video coming soon</p>
       <p className="mt-4 max-w-md text-center text-xs text-white/25">
-        This lesson&apos;s video is being prepared. Once uploaded, it will stream here
+        This lesson&apos;s video is being prepared. Once uploaded to Mux, it will stream here
         in full HD.
       </p>
     </div>
