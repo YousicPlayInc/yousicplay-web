@@ -185,6 +185,27 @@ export interface Database {
           page_url?: string | null;
         };
       };
+      lesson_progress: {
+        Row: {
+          id: string;
+          customer_id: string;
+          course_slug: string;
+          lesson_index: number;
+          completed_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_id: string;
+          course_slug: string;
+          lesson_index: number;
+          completed_at?: string;
+        };
+        Update: {
+          course_slug?: string;
+          lesson_index?: number;
+          completed_at?: string;
+        };
+      };
     };
   };
 }

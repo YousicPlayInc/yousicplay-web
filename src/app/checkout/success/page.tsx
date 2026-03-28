@@ -41,9 +41,19 @@ export default async function CheckoutSuccessPage({
   }
 
   const session = await stripe.checkout.sessions.retrieve(session_id);
-  const buyUrl = session.metadata?.buyUrl;
+  const slug = session.metadata?.slug;
   const itemType = session.metadata?.itemType;
   const customerName = session.customer_details?.name;
+
+  // Determine where to send the user
+  const learnUrl = slug && itemType === "course" ? `/learn/${slug}` : null;
+  const browseUrl = slug
+    ? itemType === "bundle"
+      ? `/bundles/${slug}`
+      : itemType === "product"
+        ? `/products/${slug}`
+        : `/classes/${slug}`
+    : "/all-classes";
 
   return (
     <section className="bg-navy py-24">
@@ -69,21 +79,17 @@ export default async function CheckoutSuccessPage({
             {customerName ? `Thanks, ${customerName}!` : "Thank You!"}
           </h1>
           <p className="mt-4 text-lg text-white/70">
-            Your purchase is confirmed. You&apos;ll receive a confirmation email
-            shortly.
+            Your purchase is confirmed. You&apos;re all set to start learning.
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            {buyUrl && (
-              <Button
-                href={buyUrl}
-                external
-                variant="magenta"
-                className="px-10 py-4"
-              >
-                {itemType === "product"
-                  ? "Access Your Product"
-                  : "Start Learning"}
+            {learnUrl ? (
+              <Button href={learnUrl} variant="magenta" className="px-10 py-4">
+                Start Learning Now
+              </Button>
+            ) : (
+              <Button href="/account" variant="magenta" className="px-10 py-4">
+                Go to My Courses
               </Button>
             )}
             <Button href="/all-classes" variant="outline">

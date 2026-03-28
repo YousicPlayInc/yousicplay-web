@@ -4,6 +4,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import EmailCaptureModal from "@/components/shared/EmailCaptureModal";
 import UnlockSuccessButton from "@/components/shared/UnlockSuccessButton";
+import AuthProvider from "@/components/providers/AuthProvider";
+import AnalyticsProvider from "@/components/providers/AnalyticsProvider";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -55,11 +57,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${playfair.variable} antialiased`}>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <EmailCaptureModal />
-        <UnlockSuccessButton />
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+          <EmailCaptureModal />
+          <UnlockSuccessButton />
+          <AnalyticsProvider />
+        </AuthProvider>
       </body>
     </html>
   );

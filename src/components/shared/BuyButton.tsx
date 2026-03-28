@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/components/providers/AuthProvider";
 import type { CheckoutItemType } from "@/lib/checkout";
 
 interface BuyButtonProps {
@@ -19,21 +20,28 @@ export default function BuyButton({
   itemType,
   price,
   buyUrl,
-  label = "Buy Now",
+  label,
   variant = "magenta",
   className,
 }: BuyButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
-  // Free items go directly to Thinkific
+  // Free items go directly to the learning experience (no Stripe)
   if (price === 0) {
+    const freeLabel = label || (itemType === "course" ? "Start Free Course" : "Get Free Access");
+    const learnUrl = itemType === "course" ? `/learn/${slug}` : `/products/${slug}`;
+    const href = user ? learnUrl : `/login?redirect=${encodeURIComponent(learnUrl)}`;
+
     return (
-      <Button href={buyUrl} external variant={variant} className={className}>
-        {label}
+      <Button href={href} variant={variant} className={className}>
+        {freeLabel}
       </Button>
     );
   }
+
+  const paidLabel = label || "Buy Now";
 
   async function handleClick() {
     setLoading(true);
@@ -69,7 +77,7 @@ export default function BuyButton({
         disabled={loading}
         className={className}
       >
-        {loading ? "Redirecting..." : label}
+        {loading ? "Redirecting..." : paidLabel}
       </Button>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
     </div>

@@ -64,10 +64,14 @@ export default function CourseHero({
               <Tag>{instrument}</Tag>
             </div>
             <div className="mt-6 flex items-center gap-4">
-              <div className="flex items-baseline gap-2">
-                <span className="font-poppins text-3xl font-bold text-white">${price}</span>
-                <span className="text-lg text-lime line-through">${originalPrice}</span>
-              </div>
+              {price === 0 ? (
+                <span className="font-poppins text-3xl font-bold text-lime">Free</span>
+              ) : (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-poppins text-3xl font-bold text-white">${price}</span>
+                  <span className="text-lg text-lime line-through">${originalPrice}</span>
+                </div>
+              )}
               <StarRating rating={rating} />
             </div>
             <p className="mt-2 text-sm text-white/50">{learnerCount} Learners</p>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerSupabase } from "@/lib/supabase";
+import { trackPurchase as trackKlaviyoPurchase } from "@/lib/klaviyo";
 import Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
@@ -133,4 +134,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log(
     `Purchase recorded: ${email} bought ${itemType}/${slug} for $${amount / 100}`
   );
+
+  // Sync to Klaviyo (non-blocking)
+  trackKlaviyoPurchase({
+    email,
+    customerName: name || undefined,
+    slug,
+    itemType,
+    productName: slug, // Will use the slug as product name; Stripe session doesn't have our title
+    amount,
+    currency: session.currency || "usd",
+    stripePaymentId,
+  }).catch((err) => console.error("[Klaviyo] Purchase sync failed:", err));
 }

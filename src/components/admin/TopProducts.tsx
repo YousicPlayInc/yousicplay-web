@@ -5,6 +5,17 @@ interface TopProductsProps {
 }
 
 export default function TopProducts({ products }: TopProductsProps) {
+  if (products.length === 0) {
+    return (
+      <div>
+        <h2 className="mb-4 font-serif text-xl text-cream">Top Products</h2>
+        <div className="rounded-xl bg-navy-light p-8 text-center">
+          <p className="text-sm text-white/50">No purchases yet.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="mb-4 font-serif text-xl text-cream">Top Products</h2>

@@ -48,10 +48,14 @@ export default function StickyPriceBar({
       <MaxWidthWrapper>
         <div className="flex h-16 items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <div className="flex items-baseline gap-2">
-              <span className="font-poppins text-2xl font-bold text-white">${price}</span>
-              <span className="text-sm text-lime line-through">${originalPrice}</span>
-            </div>
+            {price === 0 ? (
+              <span className="font-poppins text-2xl font-bold text-lime">Free</span>
+            ) : (
+              <div className="flex items-baseline gap-2">
+                <span className="font-poppins text-2xl font-bold text-white">${price}</span>
+                <span className="text-sm text-lime line-through">${originalPrice}</span>
+              </div>
+            )}
             <StarRating rating={rating} />
             <span className="hidden text-sm text-white/60 sm:block">{learnerCount} Learners</span>
           </div>

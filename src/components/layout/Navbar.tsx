@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import MaxWidthWrapper from "./MaxWidthWrapper";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,12 +29,7 @@ export default function Navbar() {
               </svg>
               Classes
             </Link>
-            <a
-              href="https://courses.yousicplay.com/users/sign_in"
-              className="text-sm font-medium uppercase tracking-wide text-white transition-colors hover:text-lime"
-            >
-              Login
-            </a>
+            <UserMenu />
           </div>
 
           {/* Mobile Hamburger */}
@@ -67,12 +63,9 @@ export default function Navbar() {
               </svg>
               Classes
             </Link>
-            <a
-              href="https://courses.yousicplay.com/users/sign_in"
-              className="text-center text-sm font-medium uppercase tracking-wide text-white"
-            >
-              Login
-            </a>
+            <div className="flex justify-center">
+              <UserMenu />
+            </div>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/data/courses";
+import { seoPages } from "@/data/seo-pages";
 
 const BASE_URL = "https://yousicplay.com";
 
@@ -20,5 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...coursePages];
+  const seoLandingPages: MetadataRoute.Sitemap = seoPages.map((page) => ({
+    url: `${BASE_URL}/learn-music/${page.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...coursePages, ...seoLandingPages];
 }

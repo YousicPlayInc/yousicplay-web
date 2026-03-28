@@ -26,9 +26,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Free items skip Stripe — go directly to Thinkific
+    // Free items skip Stripe — go directly to the learning experience
     if (item.price === 0) {
-      return NextResponse.json({ url: item.buyUrl });
+      const freeUrl =
+        item.itemType === "course"
+          ? `/learn/${item.slug}`
+          : item.itemType === "bundle"
+            ? `/bundles/${item.slug}`
+            : `/products/${item.slug}`;
+      return NextResponse.json({ url: freeUrl });
     }
 
     const origin = request.headers.get("origin") || "https://yousicplay.com";
