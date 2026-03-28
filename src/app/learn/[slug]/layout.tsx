@@ -35,61 +35,56 @@ export default async function LearnLayout({ children, params }: LearnLayoutProps
   // Free courses ($0) are accessible to any authenticated user.
   // Paid courses require a completed purchase record in Supabase.
   if (course.price > 0) {
-    try {
-      // Get authenticated user from SSR session
-      const supabase = await createSSRSupabase();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const supabase = await createSSRSupabase();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (user) {
-        // Use admin client to bypass RLS and check purchases
-        const adminSupabase = createServerSupabase();
+    if (!user) {
+      // Middleware should catch this, but as a safety net:
+      redirect(`/login?redirect=/learn/${slug}`);
+    }
 
-        // Look up customer by auth user email
-        const { data: customer } = await adminSupabase
-          .from("customers")
-          .select("id")
-          .eq("email", user.email!)
-          .single();
+    // Use admin client to bypass RLS and check purchases
+    const adminSupabase = createServerSupabase();
 
-        if (customer) {
-          // Check for a completed purchase of this course (by slug match in products table)
-          const { data: product } = await adminSupabase
-            .from("products")
-            .select("id")
-            .eq("slug", slug)
-            .single();
+    // Look up customer by auth user email
+    const { data: customer } = await adminSupabase
+      .from("customers")
+      .select("id")
+      .eq("email", user.email!)
+      .single();
 
-          if (product) {
-            const { data: purchase } = await adminSupabase
-              .from("purchases")
-              .select("id")
-              .eq("customer_id", customer.id)
-              .eq("product_id", product.id)
-              .eq("status", "completed")
-              .limit(1)
-              .single();
+    if (!customer) {
+      redirect(`/classes/${slug}?access=required`);
+    }
 
-            if (!purchase) {
-              // User is authenticated but hasn't purchased — send to sales page
-              redirect(`/classes/${slug}?access=required`);
-            }
-          } else {
-            // Product not in DB yet (hasn't been purchased by anyone)
-            // This means no one has bought it — redirect to sales page
-            redirect(`/classes/${slug}?access=required`);
-          }
-        } else {
-          // No customer record — redirect to sales page
-          redirect(`/classes/${slug}?access=required`);
-        }
+    // Check for ANY completed purchase matching this slug.
+    // Uses a direct join so it works whether products are pre-seeded or webhook-created.
+    const { data: purchase } = await adminSupabase
+      .from("purchases")
+      .select("id, products!inner(slug)")
+      .eq("customer_id", customer.id)
+      .eq("status", "completed")
+      .eq("products.slug", slug)
+      .limit(1)
+      .maybeSingle();
+
+    if (!purchase) {
+      // Also check if user bought a bundle that includes this course
+      const { data: bundlePurchase } = await adminSupabase
+        .from("purchases")
+        .select("id, products!inner(type)")
+        .eq("customer_id", customer.id)
+        .eq("status", "completed")
+        .eq("products.type", "bundle")
+        .limit(1)
+        .maybeSingle();
+
+      if (!bundlePurchase) {
+        redirect(`/classes/${slug}?access=required`);
       }
-      // If no user, middleware should have already redirected to /login
-    } catch {
-      // If verification fails, allow access rather than block
-      // (fail open — better UX, webhook will eventually create records)
-      console.error("Purchase verification error for slug:", slug);
+      // Bundle purchasers get access to all courses
     }
   }
 

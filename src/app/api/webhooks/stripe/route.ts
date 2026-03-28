@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    console.error("STRIPE_WEBHOOK_SECRET is not configured");
+    console.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET is not configured");
     return NextResponse.json(
       { error: "Webhook not configured" },
       { status: 500 }
@@ -29,15 +29,30 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("Webhook signature verification failed:", err);
+    console.error("[Stripe Webhook] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  // Only handle checkout.session.completed
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    await handleCheckoutCompleted(session);
+
+    try {
+      await handleCheckoutCompleted(session);
+    } catch (err) {
+      // Log the full error but still return 200 to Stripe so it doesn't retry
+      // (we already have idempotency protection, so retries are safe, but
+      // we want to avoid unnecessary webhook noise)
+      console.error(
+        "[Stripe Webhook] CRITICAL: handleCheckoutCompleted failed for session",
+        session.id,
+        err
+      );
+    }
   }
 
+  // Always return 200 — Stripe retries on non-2xx, and our idempotency check
+  // prevents duplicate processing
   return NextResponse.json({ received: true });
 }
 
@@ -52,23 +67,35 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const amount = session.amount_total ?? 0;
 
   if (!email || !slug || !itemType) {
-    console.error("Missing required session data:", { email, slug, itemType });
+    console.error("[Stripe Webhook] Missing required session data:", {
+      sessionId: session.id,
+      email: !!email,
+      slug: !!slug,
+      itemType: !!itemType,
+    });
     return;
   }
 
-  // Idempotency: skip if already recorded
+  if (!stripePaymentId) {
+    console.error("[Stripe Webhook] Missing payment_intent for session:", session.id);
+    return;
+  }
+
+  // ── Idempotency: skip if already recorded ──────────────────────────────
   const { data: existingPurchase } = await supabase
     .from("purchases")
     .select("id")
     .eq("stripe_payment_id", stripePaymentId)
-    .single();
+    .maybeSingle();
 
   if (existingPurchase) {
-    console.log(`Purchase already recorded for payment ${stripePaymentId}`);
+    console.log(
+      `[Stripe Webhook] Duplicate — purchase already recorded for payment ${stripePaymentId}`
+    );
     return;
   }
 
-  // Upsert customer
+  // ── Upsert customer ────────────────────────────────────────────────────
   const { data: customer, error: customerError } = await supabase
     .from("customers")
     .upsert(
@@ -83,40 +110,48 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     .single();
 
   if (customerError || !customer) {
-    console.error("Failed to upsert customer:", customerError);
-    return;
+    console.error("[Stripe Webhook] CRITICAL: Failed to upsert customer:", {
+      email,
+      error: customerError,
+    });
+    throw new Error(`Customer upsert failed: ${customerError?.message}`);
   }
 
-  // Look up or create product
+  // ── Look up or create product ──────────────────────────────────────────
+  // First try to find the pre-seeded product by slug
   let { data: product } = await supabase
     .from("products")
-    .select("id")
+    .select("id, name")
     .eq("slug", slug)
     .single();
 
   if (!product) {
+    // Product not pre-seeded — create it from session metadata
     const productType = itemType === "bundle" ? "bundle" : "course";
     const { data: newProduct, error: productError } = await supabase
       .from("products")
       .insert({
-        name: slug,
+        name: session.metadata?.productName || slug,
         slug,
         type: productType,
         price: amount,
         billing_interval: "one_time",
         active: true,
       })
-      .select("id")
+      .select("id, name")
       .single();
 
     if (productError || !newProduct) {
-      console.error("Failed to create product:", productError);
-      return;
+      console.error("[Stripe Webhook] CRITICAL: Failed to create product:", {
+        slug,
+        error: productError,
+      });
+      throw new Error(`Product creation failed: ${productError?.message}`);
     }
     product = newProduct;
   }
 
-  // Record purchase
+  // ── Record purchase ────────────────────────────────────────────────────
   const { error: purchaseError } = await supabase.from("purchases").insert({
     customer_id: customer.id,
     product_id: product.id,
@@ -127,21 +162,26 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   });
 
   if (purchaseError) {
-    console.error("Failed to record purchase:", purchaseError);
-    return;
+    console.error("[Stripe Webhook] CRITICAL: Failed to record purchase:", {
+      customerId: customer.id,
+      productId: product.id,
+      stripePaymentId,
+      error: purchaseError,
+    });
+    throw new Error(`Purchase insert failed: ${purchaseError.message}`);
   }
 
   console.log(
-    `Purchase recorded: ${email} bought ${itemType}/${slug} for $${amount / 100}`
+    `[Stripe Webhook] SUCCESS: ${email} bought ${itemType}/${slug} for $${(amount / 100).toFixed(2)}`
   );
 
-  // Sync to Klaviyo (non-blocking)
+  // ── Sync to Klaviyo (non-blocking) ─────────────────────────────────────
   trackKlaviyoPurchase({
     email,
     customerName: name || undefined,
     slug,
     itemType,
-    productName: slug, // Will use the slug as product name; Stripe session doesn't have our title
+    productName: product.name || slug,
     amount,
     currency: session.currency || "usd",
     stripePaymentId,

@@ -40,6 +40,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           courseSlug={slug}
           lessonIndex={lessonIndex}
           lessonTitle={lesson.title}
+          wistiaId={lesson.wistiaId}
         />
       </div>
 

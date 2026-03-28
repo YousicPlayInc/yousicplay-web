@@ -9,6 +9,8 @@ export interface Instructor {
 export interface Lesson {
   title: string;
   description?: string;
+  /** Wistia video hash ID — e.g., "abc123def4" from the Wistia dashboard */
+  wistiaId?: string;
 }
 
 export interface FAQ {

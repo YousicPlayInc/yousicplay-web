@@ -1,3 +1,17 @@
+import Link from "next/link";
+
+const internalLinks = [
+  {
+    label: "Launch Checklist",
+    href: "/admin/tasks",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+      </svg>
+    ),
+  },
+];
+
 const links = [
   {
     label: "Stripe Dashboard",
@@ -51,6 +65,17 @@ export default function QuickLinks() {
     <div>
       <h2 className="mb-4 font-serif text-xl text-cream">Quick Links</h2>
       <div className="grid gap-3">
+        {internalLinks.map((link) => (
+          <Link
+            key={link.label}
+            href={link.href}
+            className="flex items-center gap-4 rounded-xl bg-navy-light p-4 text-white/80 transition-colors hover:bg-navy-light/80 hover:text-white"
+          >
+            <span className="text-lime">{link.icon}</span>
+            <span className="flex-1 text-sm font-medium">{link.label}</span>
+            <span className="text-xs text-white/40">View &rarr;</span>
+          </Link>
+        ))}
         {links.map((link) => (
           <a
             key={link.label}
