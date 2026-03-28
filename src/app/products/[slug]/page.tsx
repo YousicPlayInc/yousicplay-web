@@ -157,6 +157,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <>
       <ProductHero
+        slug={product.slug}
         title={product.title}
         description={product.description}
         price={product.price}
@@ -170,6 +171,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
       {product.price > 0 && (
         <StickyPriceBar
+          slug={product.slug}
+          itemType="product"
           price={product.price}
           originalPrice={product.price}
           rating={4.7}

@@ -1,8 +1,9 @@
 import Image from "next/image";
-import Button from "@/components/ui/Button";
+import BuyButton from "@/components/shared/BuyButton";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 interface ProductHeroProps {
+  slug: string;
   title: string;
   description: string;
   price: number;
@@ -27,6 +28,7 @@ function getButtonLabel(type: ProductHeroProps["type"]): string {
 }
 
 export default function ProductHero({
+  slug,
   title,
   description,
   price,
@@ -110,14 +112,15 @@ export default function ProductHero({
 
             {/* CTA */}
             <div className="mt-8">
-              <Button
-                href={buyUrl}
-                external
+              <BuyButton
+                slug={slug}
+                itemType="product"
+                price={price}
+                buyUrl={buyUrl}
+                label={buttonLabel}
                 variant={buttonVariant}
                 className="px-10 py-4"
-              >
-                {buttonLabel}
-              </Button>
+              />
             </div>
           </div>
         </div>

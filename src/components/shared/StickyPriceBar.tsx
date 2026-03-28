@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import StarRating from "@/components/ui/StarRating";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
+import BuyButton from "@/components/shared/BuyButton";
+import type { CheckoutItemType } from "@/lib/checkout";
 
 interface StickyPriceBarProps {
+  slug: string;
+  itemType: CheckoutItemType;
   price: number;
   originalPrice: number;
   rating: number;
@@ -13,6 +17,8 @@ interface StickyPriceBarProps {
 }
 
 export default function StickyPriceBar({
+  slug,
+  itemType,
   price,
   originalPrice,
   rating,
@@ -49,14 +55,14 @@ export default function StickyPriceBar({
             <StarRating rating={rating} />
             <span className="hidden text-sm text-white/60 sm:block">{learnerCount} Learners</span>
           </div>
-          <a
-            href={buyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full bg-magenta px-6 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-magenta-dark"
-          >
-            Buy Now
-          </a>
+          <BuyButton
+            slug={slug}
+            itemType={itemType}
+            price={price}
+            buyUrl={buyUrl}
+            variant="magenta"
+            className="px-6 py-2.5"
+          />
         </div>
       </MaxWidthWrapper>
     </div>

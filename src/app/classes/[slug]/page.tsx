@@ -58,6 +58,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   return (
     <>
       <CourseHero
+        slug={course.slug}
         title={course.title}
         description={course.description}
         instructorName={course.instructor.name}
@@ -72,6 +73,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
         imagePath={course.heroImage || course.imagePath}
       />
       <StickyPriceBar
+        slug={course.slug}
+        itemType="course"
         price={course.price}
         originalPrice={course.originalPrice}
         rating={course.rating}

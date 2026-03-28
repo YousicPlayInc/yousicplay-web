@@ -84,6 +84,7 @@ export default async function BundlePage({ params }: BundlePageProps) {
   return (
     <>
       <BundleHero
+        slug={bundle.slug}
         title={bundle.title}
         description={bundle.description}
         price={bundle.price}
@@ -93,6 +94,8 @@ export default async function BundlePage({ params }: BundlePageProps) {
         highlights={bundle.highlights}
       />
       <StickyPriceBar
+        slug={bundle.slug}
+        itemType="bundle"
         price={bundle.price}
         originalPrice={bundle.originalPrice}
         rating={4.8}

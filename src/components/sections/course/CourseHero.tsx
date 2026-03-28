@@ -1,10 +1,11 @@
 import Image from "next/image";
-import Button from "@/components/ui/Button";
+import BuyButton from "@/components/shared/BuyButton";
 import Tag from "@/components/ui/Tag";
 import StarRating from "@/components/ui/StarRating";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 interface CourseHeroProps {
+  slug: string;
   title: string;
   description: string;
   instructorName: string;
@@ -20,6 +21,7 @@ interface CourseHeroProps {
 }
 
 export default function CourseHero({
+  slug,
   title,
   description,
   instructorName,
@@ -70,9 +72,14 @@ export default function CourseHero({
             </div>
             <p className="mt-2 text-sm text-white/50">{learnerCount} Learners</p>
             <div className="mt-8">
-              <Button href={buyUrl} external variant="magenta" className="px-10 py-4">
-                Buy Now
-              </Button>
+              <BuyButton
+                slug={slug}
+                itemType="course"
+                price={price}
+                buyUrl={buyUrl}
+                variant="magenta"
+                className="px-10 py-4"
+              />
             </div>
           </div>
         </div>

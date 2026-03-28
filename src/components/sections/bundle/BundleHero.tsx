@@ -1,8 +1,9 @@
 import Image from "next/image";
-import Button from "@/components/ui/Button";
+import BuyButton from "@/components/shared/BuyButton";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 
 interface BundleHeroProps {
+  slug: string;
   title: string;
   description: string;
   price: number;
@@ -13,6 +14,7 @@ interface BundleHeroProps {
 }
 
 export default function BundleHero({
+  slug,
   title,
   description,
   price,
@@ -81,14 +83,14 @@ export default function BundleHero({
 
             {/* CTA */}
             <div className="mt-8">
-              <Button
-                href={buyUrl}
-                external
+              <BuyButton
+                slug={slug}
+                itemType="bundle"
+                price={price}
+                buyUrl={buyUrl}
                 variant="magenta"
                 className="px-10 py-4"
-              >
-                Buy Now
-              </Button>
+              />
             </div>
           </div>
         </div>

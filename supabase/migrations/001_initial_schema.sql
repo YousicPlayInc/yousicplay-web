@@ -14,6 +14,8 @@ create table customers (
   id uuid primary key default gen_random_uuid(),
   email text unique not null,
   name text,
+  phone text,                       -- E.164 format (e.g. +15551234567) for SMS campaigns
+  sms_consent boolean default false not null,  -- TCPA compliance: explicit opt-in required
   stripe_customer_id text unique,
   klaviyo_profile_id text unique,
   created_at timestamptz default now() not null,
@@ -22,6 +24,7 @@ create table customers (
 
 create index idx_customers_email on customers (email);
 create index idx_customers_stripe on customers (stripe_customer_id);
+create index idx_customers_phone on customers (phone) where phone is not null;
 
 -- ── Products ─────────────────────────────────────────────────────────────
 -- All pricing lives here + Stripe, never hardcoded in the UI.
@@ -96,6 +99,8 @@ create index idx_assignments_visitor on experiment_assignments (visitor_id);
 create table email_captures (
   id uuid primary key default gen_random_uuid(),
   email text not null,
+  phone text,                          -- optional, for SMS opt-in from lead gen forms
+  sms_consent boolean default false not null,
   source text,                         -- e.g. 'hero_form', 'footer_form', 'exit_intent'
   page_url text,
   created_at timestamptz default now() not null
