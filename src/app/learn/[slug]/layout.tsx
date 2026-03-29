@@ -59,32 +59,28 @@ export default async function LearnLayout({ children, params }: LearnLayoutProps
       redirect(`/classes/${slug}?access=required`);
     }
 
-    // Check for ANY completed purchase matching this slug.
-    // Uses a direct join so it works whether products are pre-seeded or webhook-created.
-    const { data: purchase } = await adminSupabase
-      .from("purchases")
-      .select("id, products!inner(slug)")
-      .eq("customer_id", customer.id)
-      .eq("status", "completed")
-      .eq("products.slug", slug)
-      .limit(1)
-      .maybeSingle();
-
-    if (!purchase) {
-      // Also check if user bought a bundle that includes this course
-      const { data: bundlePurchase } = await adminSupabase
+    // Check for direct purchase OR bundle purchase in parallel
+    const [{ data: purchase }, { data: bundlePurchase }] = await Promise.all([
+      adminSupabase
+        .from("purchases")
+        .select("id, products!inner(slug)")
+        .eq("customer_id", customer.id)
+        .eq("status", "completed")
+        .eq("products.slug", slug)
+        .limit(1)
+        .maybeSingle(),
+      adminSupabase
         .from("purchases")
         .select("id, products!inner(type)")
         .eq("customer_id", customer.id)
         .eq("status", "completed")
         .eq("products.type", "bundle")
         .limit(1)
-        .maybeSingle();
+        .maybeSingle(),
+    ]);
 
-      if (!bundlePurchase) {
-        redirect(`/classes/${slug}?access=required`);
-      }
-      // Bundle purchasers get access to all courses
+    if (!purchase && !bundlePurchase) {
+      redirect(`/classes/${slug}?access=required`);
     }
   }
 

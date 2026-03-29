@@ -22,7 +22,7 @@ export default async function SettingsPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Get customer record
+  // Get customer record + check Spotify in parallel where possible
   const adminSupabase = createServerSupabase();
   const { data: customer } = await adminSupabase
     .from("customers")
@@ -30,7 +30,7 @@ export default async function SettingsPage({
     .eq("email", user?.email ?? "")
     .single();
 
-  // Check if Spotify is connected
+  // Spotify check depends on customer.id, so it must be sequential
   let spotifyConnected = false;
   if (customer?.id) {
     const { data: spotifyProfile } = await adminSupabase

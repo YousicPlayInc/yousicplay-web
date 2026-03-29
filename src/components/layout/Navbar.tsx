@@ -15,7 +15,7 @@ export default function Navbar() {
         <nav className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <Image src="/images/yousic-logo.svg" alt="YousicPlay" width={160} height={40} className="h-8 w-auto" priority />
+            <Image src="/images/yousic-logo.svg" alt="YousicPlay" width={160} height={40} className="h-8 w-[160px]" priority />
           </Link>
 
           {/* Desktop Nav */}

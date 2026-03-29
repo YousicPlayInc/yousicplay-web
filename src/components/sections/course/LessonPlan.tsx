@@ -19,7 +19,7 @@ export default function LessonPlan({ lessons }: LessonPlanProps) {
         </h2>
         <div className="space-y-0">
           {lessons.map((lesson, i) => (
-            <div key={i} className="border-b border-white/10">
+            <div key={`lesson-${i}-${lesson.title.slice(0, 20)}`} className="border-b border-white/10">
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                 className="flex w-full items-center justify-between py-5 text-left"

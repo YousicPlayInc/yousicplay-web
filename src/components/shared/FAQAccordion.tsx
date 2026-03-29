@@ -32,7 +32,7 @@ export default function FAQAccordion({ items, variant = "light" }: FAQAccordionP
         <div className="space-y-0">
           {items.map((item, i) => (
             <div
-              key={i}
+              key={`faq-${i}-${item.question.slice(0, 20)}`}
               className={cn(
                 "border-b",
                 isDark ? "border-white/10" : "border-navy/10"
