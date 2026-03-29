@@ -1,16 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import { createBrowserSupabase } from "@/lib/supabase-browser";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: Wire to Supabase auth magic link
-    // const { error } = await supabase.auth.signInWithOtp({ email });
-    setSubmitted(true);
+    setErrorMsg(null);
+    setLoading(true);
+    try {
+      const supabase = createBrowserSupabase();
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/api/auth/callback?redirect=/admin`,
+        },
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Admin login error:", err);
+      setErrorMsg("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -67,10 +86,16 @@ export default function AdminLoginPage() {
             />
             <button
               type="submit"
-              className="mt-4 w-full rounded-full bg-lime py-3 text-sm font-semibold text-navy transition-colors hover:bg-lime-dark"
+              disabled={loading}
+              className="mt-4 w-full rounded-full bg-lime py-3 text-sm font-semibold text-navy transition-colors hover:bg-lime-dark disabled:opacity-50"
             >
-              Send Magic Link
+              {loading ? "Sending..." : "Send Magic Link"}
             </button>
+            {errorMsg && (
+              <p className="mt-3 text-center text-xs text-red-400">
+                {errorMsg}
+              </p>
+            )}
             <p className="mt-4 text-center text-xs text-white/40">
               A login link will be sent to your email.
             </p>

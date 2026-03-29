@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
 import { trackEmailCapture } from "@/lib/klaviyo";
+import { rateLimit, getClientIP } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request);
+  const { success } = rateLimit(`email-capture:${ip}`, { maxTokens: 5, refillRate: 1, interval: 60000 });
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const body = await request.json();
   const { email, name, source, page_url } = body;
 
-  if (!email || typeof email !== "string" || !email.includes("@")) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || typeof email !== "string" || !emailRegex.test(email.trim())) {
     return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
   }
 

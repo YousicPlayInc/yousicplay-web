@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/data/courses";
+import { bundles } from "@/data/bundles";
+import { products } from "@/data/products";
 import { seoPages } from "@/data/seo-pages";
 
 const BASE_URL = "https://yousicplay.com";
@@ -10,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/all-classes`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/community`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/support`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/privacy-policy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/terms-of-service`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
@@ -21,6 +24,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const bundlePages: MetadataRoute.Sitemap = bundles.map((bundle) => ({
+    url: `${BASE_URL}/bundles/${bundle.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const productPages: MetadataRoute.Sitemap = products.map((product) => ({
+    url: `${BASE_URL}/products/${product.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   const seoLandingPages: MetadataRoute.Sitemap = seoPages.map((page) => ({
     url: `${BASE_URL}/learn-music/${page.slug}`,
     lastModified: new Date(),
@@ -28,5 +45,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...coursePages, ...seoLandingPages];
+  return [...staticPages, ...coursePages, ...bundlePages, ...productPages, ...seoLandingPages];
 }

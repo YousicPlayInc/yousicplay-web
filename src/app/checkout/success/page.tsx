@@ -1,6 +1,7 @@
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import MaxWidthWrapper from "@/components/layout/MaxWidthWrapper";
 import Button from "@/components/ui/Button";
+import PurchaseTracker from "@/components/analytics/PurchaseTracker";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default async function CheckoutSuccessPage({
     );
   }
 
-  const session = await stripe.checkout.sessions.retrieve(session_id);
+  const session = await getStripe().checkout.sessions.retrieve(session_id);
   const slug = session.metadata?.slug;
   const itemType = session.metadata?.itemType;
   const customerName = session.customer_details?.name;
@@ -74,6 +75,15 @@ export default async function CheckoutSuccessPage({
               />
             </svg>
           </div>
+
+          {slug && (
+            <PurchaseTracker
+              slug={slug}
+              title={session.metadata?.title || slug}
+              price={(session.amount_total ?? 0) / 100}
+              transactionId={session.payment_intent as string | undefined}
+            />
+          )}
 
           <h1 className="mt-8 font-poppins text-3xl font-bold text-white sm:text-4xl">
             {customerName ? `Thanks, ${customerName}!` : "Thank You!"}

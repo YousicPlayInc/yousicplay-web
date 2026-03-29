@@ -7,6 +7,12 @@ import {
   getTopArtists,
   getTopTracks,
 } from "@/lib/spotify";
+import { createHmac, timingSafeEqual } from "crypto";
+
+function signState(data: string): string {
+  const secret = process.env.SPOTIFY_CLIENT_SECRET || "fallback-dev-secret";
+  return createHmac("sha256", secret).update(data).digest("hex");
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -27,10 +33,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Decode and verify state
+  // Decode and verify state with HMAC signature
   let stateData: { email: string; ts: number };
   try {
-    stateData = JSON.parse(Buffer.from(state, "base64url").toString());
+    const stateObj = JSON.parse(Buffer.from(state, "base64url").toString());
+    const { payload, sig } = stateObj;
+    const expectedSig = signState(payload);
+    if (!timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+      return NextResponse.redirect(new URL("/account?error=invalid_state", origin));
+    }
+    stateData = JSON.parse(payload);
   } catch {
     return NextResponse.redirect(
       new URL("/account/settings?spotify=error&reason=invalid_state", origin)

@@ -32,8 +32,16 @@ export default function GlobalError({
           Something went wrong
         </h1>
 
+        {(() => {
+          // Log the real error for debugging, show generic message to user
+          if (error.message) {
+            console.error("Application error:", error.message, error.digest);
+          }
+          return null;
+        })()}
+
         <p className="mt-3 font-poppins text-sm text-white/50">
-          {error.message || "An unexpected error occurred."}
+          An unexpected error occurred. Please try again later.
         </p>
 
         <div className="mt-8 flex flex-col gap-3">

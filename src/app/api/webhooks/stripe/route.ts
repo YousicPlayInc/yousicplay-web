@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createServerSupabase } from "@/lib/supabase";
 import { trackPurchase as trackKlaviyoPurchase } from "@/lib/klaviyo";
 import Stripe from "stripe";
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
@@ -126,29 +126,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     .single();
 
   if (!product) {
-    // Product not pre-seeded — create it from session metadata
-    const productType = itemType === "bundle" ? "bundle" : "course";
-    const { data: newProduct, error: productError } = await supabase
-      .from("products")
-      .insert({
-        name: session.metadata?.productName || slug,
-        slug,
-        type: productType,
-        price: amount,
-        billing_interval: "one_time",
-        active: true,
-      })
-      .select("id, name")
-      .single();
-
-    if (productError || !newProduct) {
-      console.error("[Stripe Webhook] CRITICAL: Failed to create product:", {
-        slug,
-        error: productError,
-      });
-      throw new Error(`Product creation failed: ${productError?.message}`);
-    }
-    product = newProduct;
+    console.error("[Stripe Webhook] CRITICAL: Product not found in database for slug:", slug);
+    throw new Error(`Product not found for slug: ${slug}`);
   }
 
   // ── Record purchase ────────────────────────────────────────────────────

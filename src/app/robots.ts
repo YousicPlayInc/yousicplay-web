@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: [],
+      disallow: ["/admin", "/api/", "/learn", "/checkout", "/account", "/login"],
     },
     sitemap: "https://yousicplay.com/sitemap.xml",
   };

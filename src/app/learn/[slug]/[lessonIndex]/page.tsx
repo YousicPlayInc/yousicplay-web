@@ -3,9 +3,30 @@ import { courses } from "@/data/courses";
 import VideoPlayer from "@/components/sections/learn/VideoPlayer";
 import LessonNav from "@/components/sections/learn/LessonNav";
 import MarkCompleteButton from "@/components/sections/learn/MarkCompleteButton";
+import type { Metadata } from "next";
 
 interface LessonPageProps {
   params: Promise<{ slug: string; lessonIndex: string }>;
+}
+
+export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
+  const { slug, lessonIndex: lessonIndexStr } = await params;
+  const course = courses.find((c) => c.slug === slug);
+  if (!course) return { title: "Lesson Not Found | YousicPlay" };
+
+  const lessonIndex = parseInt(lessonIndexStr, 10);
+  if (isNaN(lessonIndex) || lessonIndex < 0 || lessonIndex >= course.lessonPlan.length) {
+    return { title: "Lesson Not Found | YousicPlay" };
+  }
+
+  const lesson = course.lessonPlan[lessonIndex];
+  return {
+    title: `${lesson.title} — ${course.cardTitle} | YousicPlay`,
+    description: lesson.description
+      ? lesson.description
+      : `Lesson ${lessonIndex + 1} of ${course.lessonPlan.length} in ${course.cardTitle} with ${course.instructor.name}.`,
+    robots: "noindex",
+  };
 }
 
 export async function generateStaticParams() {

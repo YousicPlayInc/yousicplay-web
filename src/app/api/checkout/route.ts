@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { resolveCheckoutItem } from "@/lib/checkout";
 import type { CheckoutItemType } from "@/lib/checkout";
+import { rateLimit, getClientIP } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIP(request);
+    const { success } = rateLimit(`checkout:${ip}`, { maxTokens: 10, refillRate: 2, interval: 60000 });
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const body = await request.json();
     const { slug, itemType } = body as {
       slug: string;
@@ -39,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     const origin = request.headers.get("origin") || "https://yousicplay.com";
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       line_items: [
         {

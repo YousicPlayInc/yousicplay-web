@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getAuthUrl } from "@/lib/spotify";
+import { createHmac } from "crypto";
+
+function signState(data: string): string {
+  const secret = process.env.SPOTIFY_CLIENT_SECRET || "fallback-dev-secret";
+  return createHmac("sha256", secret).update(data).digest("hex");
+}
 
 export async function GET(request: NextRequest) {
   const { origin } = new URL(request.url);
@@ -34,10 +40,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Encode email in state for verification on callback
-  const state = Buffer.from(
-    JSON.stringify({ email: user.email, ts: Date.now() })
-  ).toString("base64url");
+  // Encode email in state with HMAC signature for verification on callback
+  const payload = JSON.stringify({ email: user.email, ts: Date.now() });
+  const sig = signState(payload);
+  const state = Buffer.from(JSON.stringify({ payload, sig })).toString("base64url");
 
   const redirectUri = `${origin}/api/spotify/callback`;
   const authUrl = getAuthUrl(redirectUri, state);
