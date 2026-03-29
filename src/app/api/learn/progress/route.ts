@@ -137,5 +137,8 @@ export async function GET(request: NextRequest) {
   }
 
   const completedLessons = (data || []).map((d) => d.lesson_index);
-  return NextResponse.json({ completedLessons });
+  const response = NextResponse.json({ completedLessons });
+  // Cache for 60s in browser, revalidate in background
+  response.headers.set("Cache-Control", "private, max-age=60, stale-while-revalidate=300");
+  return response;
 }

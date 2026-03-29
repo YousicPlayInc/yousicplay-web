@@ -18,7 +18,7 @@ export default async function AccountPage() {
 
   if (!user) return null; // Layout handles redirect, this satisfies TypeScript
 
-  // Fetch user's purchases
+  // Fetch customer record
   const adminSupabase = createServerSupabase();
 
   const { data: customer } = await adminSupabase
@@ -31,14 +31,21 @@ export default async function AccountPage() {
   const progressMap: Record<string, number> = {};
 
   if (customer) {
-    const { data: purchases } = await adminSupabase
-      .from("purchases")
-      .select("product_id, products(slug)")
-      .eq("customer_id", customer.id)
-      .eq("status", "completed");
+    // Parallelize purchases + progress queries — they're independent
+    const [purchasesResult, progressResult] = await Promise.all([
+      adminSupabase
+        .from("purchases")
+        .select("product_id, products(slug)")
+        .eq("customer_id", customer.id)
+        .eq("status", "completed"),
+      adminSupabase
+        .from("lesson_progress")
+        .select("course_slug, lesson_index")
+        .eq("customer_id", customer.id),
+    ]);
 
-    if (purchases) {
-      purchasedSlugs = purchases
+    if (purchasesResult.data) {
+      purchasedSlugs = purchasesResult.data
         .map((p) => {
           const product = p.products as unknown as { slug: string } | null;
           return product?.slug;
@@ -46,14 +53,8 @@ export default async function AccountPage() {
         .filter(Boolean) as string[];
     }
 
-    // Fetch progress for all courses this user has access to
-    const { data: progressData } = await adminSupabase
-      .from("lesson_progress")
-      .select("course_slug, lesson_index")
-      .eq("customer_id", customer.id);
-
-    if (progressData) {
-      for (const row of progressData) {
+    if (progressResult.data) {
+      for (const row of progressResult.data) {
         progressMap[row.course_slug] = (progressMap[row.course_slug] || 0) + 1;
       }
     }
